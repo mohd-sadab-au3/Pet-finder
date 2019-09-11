@@ -56,7 +56,7 @@ app.use("/login",require('./login'));
  //seprate routes for all cats 
  app.use("/allcats",require("./allcats"));
  //individual pets info
- //app.use("/petprofile",require("./petprofile"));
+ 
  //pet adopt root....
  app.use("/adopt",require('./adopt'));
  //success stories adopted routes..
