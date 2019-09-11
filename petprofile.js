@@ -1,6 +1,6 @@
 var express=require("express");
 var router=express.Router();
- 
+
 router.get("/:id",function(req,res){
     var db=req.app.locals.db ;
     db.collection("petsinfo").find({_id:require("mongodb").ObjectId(req.params.id)}).toArray(function(err,result){
@@ -14,4 +14,4 @@ router.get("/:id",function(req,res){
 });
 });
 });
-module.exports=router
+module.exports=router;
