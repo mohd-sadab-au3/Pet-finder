@@ -35,12 +35,12 @@ router.use(function (req, res, next) {
     var db = req.app.locals.db;
     console.log(req.params.id);
 
-    var result = await db.collection("usersinfo").findOne({ $and: [{ username: req.session.username }, { petLiked: { $elemMatch: { $eq: ObjectId(req.params.id) } } }] });
+    var result = await db.collection("userinfo").findOne({ $and: [{ username: req.session.username }, { petLiked: { $elemMatch: { $eq: ObjectId(req.params.id) } } }] });
     if (!result) {
       db.collection("petsinfo").updateOne({ _id: ObjectId(req.params.id) }, { $inc: { likes_count: 1 } }, function (err, result) {
         if (err) throw err;
         //console.log(result);
-        db.collection('usersinfo').updateOne({ username: req.session.username }, { $push: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
+        db.collection('userinfo').updateOne({ username: req.session.username }, { $push: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
           res.json({ likes: 1 });
         });
 
@@ -52,7 +52,7 @@ router.use(function (req, res, next) {
       db.collection("petsinfo").updateOne({ _id: ObjectId(req.params.id) }, { $inc: { likes_count: -1 } }, function (err, result) {
         if (err) throw err;
         //console.log(result);
-        db.collection('usersinfo').updateOne({ username: req.session.username }, { $pull: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
+        db.collection('userinfo').updateOne({ username: req.session.username }, { $pull: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
           res.json({ likes: -1 });
         });
       });
