@@ -20,7 +20,7 @@ router.post('/', function(req, res){
     petLiked:[],
     requestedPet:[]
   };
-  db.collection('userInfo').find({}).toArray(function(error,result){
+  db.collection('userinfo').find({}).toArray(function(error,result){
     var flag = false;
     if(error) throw error
     for(var i=0; i<result.length; i++){
@@ -35,7 +35,7 @@ router.post('/', function(req, res){
       }
     }
     if(! flag){
-      db.collection('userInfo').insertOne(newUser, function(err, result){
+      db.collection('userinfo').insertOne(newUser, function(err, result){
         if (err) throw err;
         console.log(result);
         res.redirect('/login');
