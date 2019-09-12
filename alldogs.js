@@ -2,6 +2,8 @@ var express = require("express");
 var router = express.Router();
 var ObjectId = require("mongodb").ObjectId;
 
+router.use(express.json({extended:true}));
+
 router.get('/', function (req, res) {
   var db = req.app.locals.db;
   db.collection("petsinfo").find({ category: "dog" }).sort({_id:-1}).toArray(function (err, result) {

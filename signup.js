@@ -1,5 +1,6 @@
 var express=require("express");
 var router=express.Router();
+router.use(express.urlencoded({extended:true}));
 router.get("/",function(req,res){
     res.render("signup",{
         layout: false,
