@@ -12,7 +12,9 @@ $.ajax({
     type:"POST",
     success:function(data){
 
+        $this.after(`<span class="text-info">Request sent</span>`);
         $this.remove();
+        
         alert(data);
     },
     error:function(){

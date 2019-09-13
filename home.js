@@ -5,20 +5,28 @@ router.get('/', async function (req, res) {
     var petsData;
     var user = await db.collection('userinfo').findOne({ username: req.session.username });
     if (user) {
+        var temp;
         db.collection('petsinfo').find({ $and:[{_id: { $nin: user.petAdded }},{adopted:false}]}).toArray(function (error, result) {
             if (error) throw error
+            console.log(user.requestedPet);
             result.forEach(element => {
-                if(user.requestedPet.indexOf(element)!=-1){
-                    result.requested=1;
-                }  
+               user.requestedPet.forEach(pet=>{
+                console.log("equal ",pet);
+                   if(pet == element._id)
+                   {
+                       element.requested=1;
+                   }
+
+               });
             });
+            console.log(result);
             petsData = result
             res.render('home.hbs', {
                 title: 'Home',
                 pets: result,
                 style: '/home.css',
                 loggedin: req.session.loggedIn,
-                user: req.session.username
+                user: req.session.username,
             })
         })
     } else {
