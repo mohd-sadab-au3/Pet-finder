@@ -34,8 +34,12 @@ html,body{
         <p class="card-text">Breed: {{this.breeds}}</p>
       </div>
       <div class="card-footer">
-        <a  href="/petprofile/{{this._id}}" class="btn btn-sm mx-2 detailsBtn">Details</button> 
+        <a  href="/petprofile/{{this._id}}" class="btn btn-sm mx-2 detailsBtn">Details</a> 
+        {{#if this.status}}
+        <span class="text-info ml-2">Request sent</p>
+        {{else}}
         <a  class="btn btn-sm btn-outline-primary mx-2 btn-adopt" value="{{this._id}}" href="#">Adopt</a>
+        {{/if}}
       </div>
     </div>
   </div>

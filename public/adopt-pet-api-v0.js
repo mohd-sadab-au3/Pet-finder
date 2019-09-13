@@ -3,7 +3,8 @@ $(document).on("click",".btn-adopt",function(e){
 var $this=$(this);
 var id=$this.attr("value");
 console.log("id is ",id);
-
+if(confirm("You can not cancel adoption request after confirming this"))
+{
 $.ajax({
   
     url:"/adopt/"+id,
@@ -11,6 +12,7 @@ $.ajax({
     type:"POST",
     success:function(data){
 
+        $this.remove();
         alert(data);
     },
     error:function(){
@@ -18,6 +20,7 @@ $.ajax({
        console.log("error");
     }
 })
+}
 })
 
 
@@ -39,6 +42,7 @@ $.ajax({
     data:user,
     dataType:"JSON",
     success:function(data){
+        $this.parent().empty();
         alert(data);
        
     },

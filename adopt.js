@@ -19,6 +19,7 @@ router.use(function (req, res, next) {
     }
 
 });
+//request for pet adoption
 router.post('/:pet_id', async function (req, res) {
 
     db = req.app.locals.db;
@@ -61,9 +62,6 @@ router.post('/:pet_id', async function (req, res) {
             if (error) {
                 console.log('Error response received');
             }
-            console.log(response.statusCode);
-            console.log(response.body);
-            console.log(response.headers);
         });
 
         db.collection('userinfo').find({ $and: [{ username: req.session.username }, { requestedPet: { $elemMatch: { $eq: req.params.pet_id } } }] }).toArray(function (error, result) {
@@ -83,11 +81,10 @@ router.post('/:pet_id', async function (req, res) {
                     adopter_lname: user.lastname,
                     adopter_uname: req.session.username,   //req.session.username
                     adopter_email: user.email,   //save in the pets
-                    status: 0
                 }
                 db.collection('adoptrequest').insertOne(adoptRequest, (error, result) => {
                     assert.equal(null, error);
-                    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.pet_id) }, { $push: { requestedUser: req.session.username } });
+                    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.pet_id) }, { $push: { requestedUser: req.session.username },$set:{status:1} });
                     db.collection('userinfo').updateOne({ username: req.session.username }, { $push: { requestedPet: req.params.pet_id } });
                     res.json("request is sent");
                 });
@@ -131,8 +128,9 @@ router.post('/accept/:id', async (req, res) => {
     //finding the pet informaion
     var pet_result = await db.collection('petsinfo').findOne({ _id: ObjectId(req.params.id) });
     //updating pet as addopted
-    console.log(pet_result);
-    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.id) }, { $set: { adopted: true } });
+    //console.log(pet_result);
+    if(pet_result.adopted){
+    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.id) }, { $set: { adopted: true, status:2 } });
     var requestedUser = pet_result.requestedUser;
 
     //finding all the user who sent the request for that pet and sending email
@@ -174,9 +172,6 @@ router.post('/accept/:id', async (req, res) => {
                     if (error) {
                         console.log('Error response received');
                     }
-                    console.log(response.statusCode);
-                    console.log(response.body);
-                    console.log(response.headers);
                 });
 
             }
@@ -214,13 +209,14 @@ router.post('/accept/:id', async (req, res) => {
                     if (error) {
                         console.log('Error response received');
                     }
-                    console.log(response.statusCode);
-                    console.log(response.body);
-                    console.log(response.headers);
+                    // console.log(response.statusCode);
+                    // console.log(response.body);
+                    // console.log(response.headers);
                 });
             }
 
         });
+    
 
 
     });
@@ -230,6 +226,11 @@ router.post('/accept/:id', async (req, res) => {
         if (error) throw error;
         res.json("Thanks for helping us....");
     });
+}
+else{
+   
+    res.json("You already give this pet to other person");
+}
 
 });
 

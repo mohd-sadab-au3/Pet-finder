@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/petprofile.css" >
-<div class="container-individual  mb-5">
+<div class="container-fluid container-individual  mb-5">
 
 <div class="card mb-3">
   <div class="inner">
@@ -63,7 +63,11 @@
     
     </div>
     <hr>
+    {{#unless petprofile.adopted}}
     <button type="button" value="{{petprofile._id}}" class="btn btn-block btn-adopt" >Adopt</button>
+    {{else}}
+    <h3 class="alert alert-success">This pet is already adopted by someone</h>
+    {{/unless}}
   </div>
 </div>
 
