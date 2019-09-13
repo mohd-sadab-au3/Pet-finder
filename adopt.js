@@ -34,7 +34,7 @@ router.post('/:pet_id', async function (req, res) {
         var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
 <p>Hiii !!  Myself  <b>${user.firstname} ${user.lastname}</b> i want to adopt your pet please confirm my request for pet adoption
 </p>
-       <a href="https://localhost:8080/petprofile/${req.params.pet_id}">Here
+       <a href="https://pet-finder-au3.herokuapp.com/petprofile/${req.params.pet_id}">Here
        </a>
       <p> click on the link for more details about pet </p>
        </body>

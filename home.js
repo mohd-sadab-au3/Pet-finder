@@ -7,6 +7,11 @@ router.get('/', async function (req, res) {
     if (user) {
         db.collection('petsinfo').find({ $and:[{_id: { $nin: user.petAdded }},{adopted:false}]}).toArray(function (error, result) {
             if (error) throw error
+            result.forEach(element => {
+                if(user.requestedPet.indexOf(element)!=-1){
+                    result.requested=1;
+                }  
+            });
             petsData = result
             res.render('home.hbs', {
                 title: 'Home',
