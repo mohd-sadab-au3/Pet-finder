@@ -1,9 +1,10 @@
 <style>
-html,body{
+  html,
+  body {
     height: 100% !important;
-    margin: 0!important;
-    overflow-x:hidden !important;
-  } 
+    margin: 0 !important;
+    overflow-x: hidden !important;
+  }
 </style>
 ​
 ​
@@ -34,11 +35,11 @@ html,body{
         <p class="card-text">Breed: {{this.breeds}}</p>
       </div>
       <div class="card-footer">
-        <a  href="/petprofile/{{this._id}}" class="btn btn-sm mx-2 detailsBtn">Details</a>
+        <a href="/petprofile/{{this._id}}" class="btn btn-sm mx-2 detailsBtn">Details</a>
         {{#if this.requested}}
-         <span class="text-info">Request sent</span>
-         {{else}}
-        <a  class="btn btn-sm btn-outline-primary mx-2 btn-adopt" value="{{this._id}}" href="#">Adopt</a>
+        <span class="text-info">Request sent</span>
+        {{else}}
+        <a class="btn btn-sm btn-outline-primary mx-2 btn-adopt" value="{{this._id}}" href="#">Adopt</a>
         {{/if}}
       </div>
     </div>
