@@ -84,7 +84,7 @@ router.post('/:pet_id', async function (req, res) {
                 }
                 db.collection('adoptrequest').insertOne(adoptRequest, (error, result) => {
                     assert.equal(null, error);
-                    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.pet_id) }, { $push: { requestedUser: req.session.username },$set:{status:1} });
+                    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.pet_id) }, { $push: { requestedUser: req.session.username }, $set: { status: 1 } });
                     db.collection('userinfo').updateOne({ username: req.session.username }, { $push: { requestedPet: req.params.pet_id } });
                     res.json("request is sent");
                 });
@@ -128,20 +128,20 @@ router.post('/accept/:id', async (req, res) => {
     //finding the pet informaion
     var pet_result = await db.collection('petsinfo').findOne({ _id: ObjectId(req.params.id) });
     //updating pet as addopted
-    //console.log(pet_result);
-    if(pet_result.adopted){
-    db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.id) }, { $set: { adopted: true, status:2 } });
-    var requestedUser = pet_result.requestedUser;
+    console.log(pet_result.adopted);
+    if (pet_result.adopted == false) {
+        db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.id) }, { $set: { adopted: true, status: 2 } });
+        var requestedUser = pet_result.requestedUser;
 
-    //finding all the user who sent the request for that pet and sending email
-    db.collection('userinfo').find({ username: { $in: requestedUser } }).toArray(function (error, result) {
-        if (error) throw error;
+        //finding all the user who sent the request for that pet and sending email
+        db.collection('userinfo').find({ username: { $in: requestedUser } }).toArray(function (error, result) {
+            if (error) throw error;
 
-        result.forEach(user => {
+            result.forEach(user => {
 
-            if (user.username !== req.body.user) {
+                if (user.username !== req.body.user) {
 
-                var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+                    var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
 <p>sorry pet <strong>${pet_result.name} having breeds ${pet_result.breeds}</strong> hasbeen adopted by someone else you can check it in success stories
 </p>
        <a href="https://localhost:8080">Here
@@ -150,35 +150,35 @@ router.post('/accept/:id', async (req, res) => {
        </body>
        </html>'
        `
-                var fromEmail = new helper.Email("noreply@petfinder.com");
+                    var fromEmail = new helper.Email("noreply@petfinder.com");
 
-                //in place of sadabkhan14198@gmail.com requested user info.
-                var toEmail = new helper.Email(user.email);
-                var subject = `Pet has been adopted by someone else`
-                //in place of sadabkhan username of current 
-                var content = new helper.Content('text/html', emailtext);
+                    //in place of sadabkhan14198@gmail.com requested user info.
+                    var toEmail = new helper.Email(user.email);
+                    var subject = `Pet has been adopted by someone else`
+                    //in place of sadabkhan username of current 
+                    var content = new helper.Content('text/html', emailtext);
 
-                var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-                console.log(toEmail);
+                    var mail = new helper.Mail(fromEmail, subject, toEmail, content);
+                    console.log(toEmail);
 
-                var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
-                var request = sg.emptyRequest({
-                    method: 'POST',
-                    path: '/v3/mail/send',
-                    body: mail.toJSON()
-                });
+                    var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
+                    var request = sg.emptyRequest({
+                        method: 'POST',
+                        path: '/v3/mail/send',
+                        body: mail.toJSON()
+                    });
 
-                sg.API(request, function (error, response) {
-                    if (error) {
-                        console.log('Error response received');
-                    }
-                });
+                    sg.API(request, function (error, response) {
+                        if (error) {
+                            console.log('Error response received');
+                        }
+                    });
 
-            }
+                }
 
-            else {
+                else {
 
-                var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+                    var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
                 <p>Congratulations pet <strong>${pet_result.name} having breeds ${pet_result.breeds}</strong> hasbeen adopted by you check the success stories.
                 </p>
                        <a href="https://localhost:8080">Here
@@ -187,50 +187,50 @@ router.post('/accept/:id', async (req, res) => {
                        </body>
                        </html>'
                        `
-                var fromEmail = new helper.Email("noreply@petfinder.com");
+                    var fromEmail = new helper.Email("noreply@petfinder.com");
 
-                //in place of sadabkhan14198@gmail.com requested user info.
-                var toEmail = new helper.Email(user.email);
-                var subject = `Request for pet adoption is accepted`
-                //in place of sadabkhan username of current 
-                var content = new helper.Content('text/html', emailtext);
+                    //in place of sadabkhan14198@gmail.com requested user info.
+                    var toEmail = new helper.Email(user.email);
+                    var subject = `Request for pet adoption is accepted`
+                    //in place of sadabkhan username of current 
+                    var content = new helper.Content('text/html', emailtext);
 
-                var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-                console.log(toEmail);
+                    var mail = new helper.Mail(fromEmail, subject, toEmail, content);
+                    console.log(toEmail);
 
-                var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
-                var request = sg.emptyRequest({
-                    method: 'POST',
-                    path: '/v3/mail/send',
-                    body: mail.toJSON()
-                });
+                    var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
+                    var request = sg.emptyRequest({
+                        method: 'POST',
+                        path: '/v3/mail/send',
+                        body: mail.toJSON()
+                    });
 
-                sg.API(request, function (error, response) {
-                    if (error) {
-                        console.log('Error response received');
-                    }
-                    // console.log(response.statusCode);
-                    // console.log(response.body);
-                    // console.log(response.headers);
-                });
-            }
+                    sg.API(request, function (error, response) {
+                        if (error) {
+                            console.log('Error response received');
+                        }
+                        // console.log(response.statusCode);
+                        // console.log(response.body);
+                        // console.log(response.headers);
+                    });
+                }
+
+            });
+
+
 
         });
-    
 
 
-    });
+        db.collection('adoptrequest').deleteMany({ pet_id: req.params.id }, function (error, result) {
+            if (error) throw error;
+            res.json("Thanks for helping us....");
+        });
+    }
+    else {
 
-
-    db.collection('adoptrequest').deleteMany({ pet_id: req.params.id }, function (error, result) {
-        if (error) throw error;
-        res.json("Thanks for helping us....");
-    });
-}
-else{
-   
-    res.json("You already give this pet to other person");
-}
+        res.json("You already give this pet to other person");
+    }
 
 });
 
