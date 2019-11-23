@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-console.log("adopted");
 router.get("/", function (req, res) {
     var db = req.app.locals.db
     db.collection('petsinfo').find({ "adopted": true }).toArray(function (error, result) {
@@ -10,8 +9,8 @@ router.get("/", function (req, res) {
             title: 'Success Stories',
             style: 'adopted.css',
             pets: pets,
-            user:req.session.username,
-            loggedin:req.session.loggedIn
+            user: req.session.username,
+            loggedin: req.session.loggedIn
         });
     })
 });

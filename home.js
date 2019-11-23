@@ -6,20 +6,17 @@ router.get('/', async function (req, res) {
     var user = await db.collection('userinfo').findOne({ username: req.session.username });
     if (user) {
         var temp;
-        db.collection('petsinfo').find({ $and:[{_id: { $nin: user.petAdded }},{adopted:false}]}).toArray(function (error, result) {
+        db.collection('petsinfo').find({ $and: [{ _id: { $nin: user.petAdded } }, { adopted: false }] }).toArray(function (error, result) {
             if (error) throw error
-            console.log(user.requestedPet);
-            result.forEach(element => {
-               user.requestedPet.forEach(pet=>{
-                console.log("equal ",pet);
-                   if(pet == element._id)
-                   {
-                       element.requested=1;
-                   }
 
-               });
+            result.forEach(element => {
+                user.requestedPet.forEach(pet => {
+                    if (pet == element._id) {
+                        element.requested = 1;
+                    }
+
+                });
             });
-            console.log(result);
             petsData = result
             res.render('home.hbs', {
                 title: 'Home',
@@ -30,7 +27,7 @@ router.get('/', async function (req, res) {
             })
         })
     } else {
-        db.collection('petsinfo').find({adopted:false}).toArray(function (error, result) {
+        db.collection('petsinfo').find({ adopted: false }).toArray(function (error, result) {
             if (error) throw error
             petsData = result
             res.render('home.hbs', {
@@ -41,6 +38,6 @@ router.get('/', async function (req, res) {
                 user: req.session.username
             });
         });
-        }
+    }
 })
 module.exports = router;

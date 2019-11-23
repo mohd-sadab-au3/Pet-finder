@@ -3,6 +3,11 @@
     color: #4D4751;
    
 }
+
+body{
+  text-transform: capitalize;
+}
+
 .img-resize {
     height: 492px;
     width: 445px;

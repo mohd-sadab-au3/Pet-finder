@@ -32,26 +32,25 @@ router.use(function (req, res, next) {
 
 //user information update route
 router.put('/update/info', async (req, res) => {
-if(req.session.loggedIn){
-    db = req.app.locals.db;
-    //console.log(req.body);
-    //this is for updating email of session if we use email in any where
-    //req.session.email=req.body.email;
-    db.collection('userinfo').updateOne({ username: req.session.username }, {
-        $set: {
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            phone: req.body.phone,
-            email: req.body.email,
-        }
-    }, function (error, result) {
-        assert.equal(null, error);
-        res.json("information updated successfully");
-    });
-} else{
-   
-    res.json("login");    
-  }
+    if (req.session.loggedIn) {
+        db = req.app.locals.db;
+        //this is for updating email of session if we use email in any where
+        //req.session.email=req.body.email;
+        db.collection('userinfo').updateOne({ username: req.session.username }, {
+            $set: {
+                firstname: req.body.firstname,
+                lastname: req.body.lastname,
+                phone: req.body.phone,
+                email: req.body.email,
+            }
+        }, function (error, result) {
+            assert.equal(null, error);
+            res.json("information updated successfully");
+        });
+    } else {
+
+        res.json("login");
+    }
 });
 //user profie update route
 
@@ -62,14 +61,12 @@ router.post('/pic/update', upload.single('profile_url'), async (req, res) => {
     var source = await tinify.fromFile(req.file.path);
     await source.toFile(destination);
 
-   // console.log("Filename : " + req.file.path);
     starter();
     function starter() {
         //checking file type
         fs.stat("/tmp/" + req.file.filename, async function (err, stats) {
 
             if (err) {
-              //  console.log("error occcour");
                 starter();
             } else {
 
@@ -77,11 +74,9 @@ router.post('/pic/update', upload.single('profile_url'), async (req, res) => {
                 var result = await cloudinary.v2.uploader.upload(destination);
 
                 //removing profile pic from cloudinary;
-               // console.log("body is ", req.body.public_id);
                 if (req.body.public_id)
                     cloudinary.v2.uploader.destroy(req.body.public_id, (error, resu) => {
                         assert.equal(null, error)
-                      //  console.log("result", resu);
                     });
 
                 //sending response it have to be changed;
@@ -122,7 +117,6 @@ router.get('/:username', async (req, res, next) => {
     //getting all pets upload by the user
     try {
         if (result) {
-           // console.log(result.petAdded);
             var petAdded = await db.collection('petsinfo').find({ _id: { $in: result.petAdded } }).toArray();
             petAdded.forEach(element => {
                 element.location = element.location.split(",")[0];
@@ -137,11 +131,10 @@ router.get('/:username', async (req, res, next) => {
     //getting all pets liked by the user
     try {
         if (result) {
-
-            var petLiked = await db.collection('petsinfo').find({ _id: { $in: result.petLiked } }).toArray();
-            petLiked.forEach(element => {
-                element.location = element.location.split(",")[0];
-            });
+            let petLiked = await db.collection('likes').find({ username: req.session.username }, { _id: 0, pet_id: 1 }).toArray();
+            petLiked = petLiked.map(elem => ObjectId(elem.pet_id));
+            var petLikedDetails = await db.collection('petsinfo').find(
+                { _id: { $in: petLiked } }).toArray();
         }
     }
     catch (error) {
@@ -149,14 +142,13 @@ router.get('/:username', async (req, res, next) => {
     }
 
     if (result) {
-       // console.log(petAdded);
         res.render('user', {
             userprof: result,
             petAdded: petAdded,
-            petLiked: petLiked,
+            petLiked: petLikedDetails,
             user: req.session.username,
             loggedin: req.session.loggedIn,
-            title:"User Profile"
+            title: "User Profile"
         });
     }
     else {
@@ -183,18 +175,17 @@ router.delete('/pets/delete/:id/:public_id', (req, res) => {
 
     //updating the userinfo
     db.collection('userinfo').updateOne({ username: req.session.username }, {
-        $pull: { petAdded: ObjectId(req.params.id) }, 
+        $pull: { petAdded: ObjectId(req.params.id) },
         $pull: { petLiked: ObjectId(req.params.id) }
     }, (error, result) => {
         assert.equal(null, error);
-        // console.log("result is",result);
 
         //deleting that pet from request
-        db.collection('adoptrequest').deleteMany({pet_id:req.params.id},function(error){
-            assert.equal(null,error);
+        db.collection('adoptrequest').deleteMany({ pet_id: req.params.id }, function (error) {
+            assert.equal(null, error);
         });
 
-            res.json(result);
+        res.json(result);
     });
 
 });
@@ -222,14 +213,12 @@ router.post('/pets/pic/update/:id/:pub_id', upload.single('petpic_url'), async (
     var source = await tinify.fromFile(req.file.path);
     await source.toFile(destination);
 
-   // console.log("Filename : " + req.file.path);
     starter();
     function starter() {
         //checking file type
         fs.stat("/tmp/" + req.file.filename, async function (err, stats) {
 
             if (err) {
-              //  console.log("error occcour");
                 starter();
             } else {
 
@@ -239,7 +228,6 @@ router.post('/pets/pic/update/:id/:pub_id', upload.single('petpic_url'), async (
                 //removing pet pic from cloudinary;
                 cloudinary.v2.uploader.destroy(req.params.pub_id, (error, resu) => {
                     assert.equal(null, error)
-                   // console.log("result", resu);
                 });
 
 

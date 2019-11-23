@@ -138,44 +138,48 @@ router.put('/update/:id', (req, res) => {
 
 
 
-router.post('/like/:id/:val', async (req, res) => {
+router.post('/like/:id/', async (req, res) => {
+  var db = req.app.locals.db;
 
   if (req.session.loggedIn) {
-    var db = req.app.locals.db;
-    console.log(req.params.id);
+    let pet = await db.collection("likes").findOne({
+      $and: [{ username: req.session.username },
+      { pet_id: req.params.id }]
+    });
 
-    var result = await db.collection("userinfo").findOne({ $and: [{ username: req.session.username }, { petLiked: { $elemMatch: { $eq: ObjectId(req.params.id) } } }] });
-    if (!result) {
-      db.collection("petsinfo").updateOne({ _id: ObjectId(req.params.id) }, { $inc: { likes_count: 1 } }, function (err, result) {
-        if (err) throw err;
-        //console.log(result);
-        db.collection('userinfo').updateOne({ username: req.session.username }, { $push: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
-          res.json({ likes: 1 });
-        });
-
-
+    if (pet) {
+      let temp = await db.collection("likes").deleteOne({
+        $and: [{ username: req.session.username },
+        { pet_id: req.params.id }]
       });
+      db.collection("petsinfo").findOneAndUpdate({ _id: ObjectId(req.params.id) },
+        { $inc: { likes_count: -1 } }, function (err, likeRes) {
+          console.log("dislike ", likeRes.value.likes_count)
+          res.json({ likes: likeRes.value.likes_count - 1 });
+        });
     }
     else {
-
-      db.collection("petsinfo").updateOne({ _id: ObjectId(req.params.id) }, { $inc: { likes_count: -1 } }, function (err, result) {
+      var data = {
+        "username": req.session.username,
+        "pet_id": req.params.id,
+        "category": "dog"
+      }
+      db.collection("likes").insertOne(data, function (err, likeRes) {
         if (err) throw err;
-        //console.log(result);
-        db.collection('userinfo').updateOne({ username: req.session.username }, { $pull: { petLiked: ObjectId(req.params.id) } }, function (error, result) {
-          res.json({ likes: -1 });
-        });
+
+        db.collection("petsinfo").findOneAndUpdate({ _id: ObjectId(req.params.id) },
+          { $inc: { likes_count: 1 } }, function (err, likeRes) {
+            res.json({ likes: likeRes.value.likes_count + 1, like: true });
+          });
       });
 
     }
-  }
-  else {
+  } else {
 
     res.json("login");
   }
 
 });
-
-
 
 
 

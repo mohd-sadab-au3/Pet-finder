@@ -4,6 +4,10 @@
     margin-right: 20px !important;
     
   }
+  
+body{
+  text-transform: capitalize;
+}
   .card-title{
     color: #5E548E;
   font-size: 20px !important;

@@ -1,4 +1,7 @@
 
+body{
+  text-transform: capitalize;
+}
   .container-individual{
     
     margin-top: 52px !important;

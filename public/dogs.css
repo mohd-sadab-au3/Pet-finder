@@ -2,6 +2,10 @@
 * {
     color: #4D4751;
 }
+
+body{
+  text-transform: capitalize;
+}
 .img-resize {
     max-height: 442px;
     object-fit: contain;

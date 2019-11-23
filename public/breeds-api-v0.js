@@ -3,17 +3,10 @@ var currbreed_val = '';
 //fetching the breeds for autosugestion....
 var curr_pos = $("#breeds").offset().top + $("#breeds").innerHeight();
 var wide = $("input#breeds").innerWidth();
-console.log("width is", wide);
 
-console.log("height", curr_pos);
-window.onscroll = function (e) {  
-    // called when the window is scrolled.
-    console.log("sssss")  ;
-    } 
 $(window).scroll(function () {
 
     curr_pos = curr_pos - window.scrollY;
-    console.log("height ", curr_pos);
 });
 $(document).ready(function () {
 
@@ -22,7 +15,6 @@ $(document).ready(function () {
 
     $("input[name=category]").click(function () {
         val = $("input[name=category]:checked").val();
-        //console.log("val is", val);
     });
 
     $(document).on("keydown", '#autoSuggestionBreeds', function () {
@@ -41,7 +33,6 @@ $(document).ready(function () {
         var code = e.which;// enter key code is 13; 
 
         currbreed_val = $("#breeds").val();
-        // console.log("curr",currbreed_val);
 
 
 
@@ -67,7 +58,6 @@ $(document).ready(function () {
                 dataType: "JSON",
                 success: function (data) {
 
-                    console.log(curr_pos);
 
                     $(`<div id='autoSuggestionBreeds' class=' bg-light'
                     style='position:relative; top:-30px; width:${wide}px; max-height:250px!important; overflow-y:scroll; border:1px solid grey; border-radius:2px; z-index:100px;'>
@@ -79,7 +69,6 @@ $(document).ready(function () {
                             if (data.dogs[i].indexOf(currbreed_val) != -1 ||
                                 data.dogs[i].substring(0, currbreed_val.length).toLowerCase() === currbreed_val.toLowerCase()) {
                                 $("#autoSuggestionBreeds").append(`<div class="p-2 text-dark border-bottom">${data.dogs[i]}<div>`);
-                                // console.log(data.dogs[i]);
                             }
 
 
@@ -107,9 +96,9 @@ $(document).ready(function () {
 });
 
 
-$(document).on("click","div#autoSuggestionBreeds div",function(){
+$(document).on("click", "div#autoSuggestionBreeds div", function () {
 
-  $("#breeds").val($(this).text());
-  $("div#autoSuggestionBreeds").remove();
+    $("#breeds").val($(this).text());
+    $("div#autoSuggestionBreeds").remove();
 
 })

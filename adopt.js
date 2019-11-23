@@ -26,11 +26,10 @@ router.post('/:pet_id', async function (req, res) {
 
 
     var user = await db.collection('userinfo').findOne({ username: req.session.username });
-    //console.log(user);
+
     db.collection('petsinfo').findOne({ _id: ObjectId(req.params.pet_id) }, function (error, petsDetails) {
         if (error) throw error;
         //in place of techcode@gmail.com current user info..
-        //  console.log(petsDetails);
         var emailtext = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
 <p>Hiii !!  Myself  <b>${user.firstname} ${user.lastname}</b> i want to adopt your pet please confirm my request for pet adoption
 </p>
@@ -49,7 +48,6 @@ router.post('/:pet_id', async function (req, res) {
         var content = new helper.Content('text/html', emailtext);
 
         var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-        console.log(toEmail);
 
         var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
         var request = sg.emptyRequest({
@@ -122,13 +120,11 @@ router.get('/request', async (req, res) => {
 router.post('/accept/:id', async (req, res) => {
 
     db = req.app.locals.db;
-    console.log(req.params.id);
 
 
     //finding the pet informaion
     var pet_result = await db.collection('petsinfo').findOne({ _id: ObjectId(req.params.id) });
     //updating pet as addopted
-    console.log(pet_result.adopted);
     if (pet_result.adopted == false) {
         db.collection('petsinfo').updateOne({ _id: ObjectId(req.params.id) }, { $set: { adopted: true, status: 2 } });
         var requestedUser = pet_result.requestedUser;
@@ -159,7 +155,6 @@ router.post('/accept/:id', async (req, res) => {
                     var content = new helper.Content('text/html', emailtext);
 
                     var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-                    console.log(toEmail);
 
                     var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
                     var request = sg.emptyRequest({
@@ -196,7 +191,6 @@ router.post('/accept/:id', async (req, res) => {
                     var content = new helper.Content('text/html', emailtext);
 
                     var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-                    console.log(toEmail);
 
                     var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
                     var request = sg.emptyRequest({
@@ -209,9 +203,6 @@ router.post('/accept/:id', async (req, res) => {
                         if (error) {
                             console.log('Error response received');
                         }
-                        // console.log(response.statusCode);
-                        // console.log(response.body);
-                        // console.log(response.headers);
                     });
                 }
 
@@ -262,7 +253,6 @@ router.delete('/delete/:id/:user/:email', async (req, res) => {
             var content = new helper.Content('text/html', emailtext);
 
             var mail = new helper.Mail(fromEmail, subject, toEmail, content);
-            console.log(toEmail);
 
             var sg = require('sendgrid')(process.env.SENDGRID_API_KEY);
             var request = sg.emptyRequest({
@@ -275,9 +265,6 @@ router.delete('/delete/:id/:user/:email', async (req, res) => {
                 if (error) {
                     console.log('Error response received');
                 }
-                console.log(response.statusCode);
-                console.log(response.body);
-                console.log(response.headers);
             });
             res.json("request is deleted successfully");
 

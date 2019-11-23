@@ -1,5 +1,5 @@
-   //  for animation of profile...
-   $(".jumbotron-fluid").hover(function () {
+//  for animation of profile...
+$(".jumbotron-fluid").hover(function () {
     $(".profile-tab").slideDown("slow");
 
 }, function () {
@@ -25,7 +25,6 @@ $(document).ready(function () {
 
         var liked = $('#Liked').offset().top - window.scrollY;
         var upload = $('#Uploads').offset().top - window.scrollY;
-       // console.log(liked);
         if (liked < 0) {
             $("#currentSection").attr("class", "alert mt-5 fixed-top text-center alert-info").html("Liked Pets");
         }
